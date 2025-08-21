@@ -65,7 +65,7 @@ function login() {
         displayRecipes(); // Refresh recipe display to show edit/delete buttons
     } else {
         loginError.innerHTML = `
-            <img src="freaksonic.jpg" alt="Freak Sonic" style="width: 200px; height: 200px; border-radius: 12px; margin-bottom: 1rem;">
+            <img src="freaksonic.gif" alt="Freak Sonic" style="width: 200px; height: 200px; border-radius: 12px; margin-bottom: 1rem;">
             <p style="font-size: 1.1rem; font-weight: 600; color: #ef4444; margin-bottom: 0.5rem;">Looks like you tried to enter my site without my permission...</p>
             <p style="font-size: 1rem; color: #dc2626;">Freak Sonic has now given you 10 days to live 👅</p>
         `;
