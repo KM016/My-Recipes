@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyaan's Recipes</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h2><i class="fas fa-lock"></i> Login Required</h2>
+            <p>Enter password to add recipes</p>
+            <input type="password" id="passwordInput" placeholder="Enter password">
+            <button onclick="login()" class="btn btn-primary">Login</button>
+            <p id="loginError" class="error-message"></p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1><i class="fas fa-utensils"></i> Keyaan's Recipes</h1>
+            <div class="header-actions">
+                <button id="loginBtn" onclick="showLogin()" class="btn btn-secondary">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <button id="addRecipeBtn" onclick="showAddRecipe()" class="btn btn-primary" style="display: none;">
+                    <i class="fas fa-plus"></i> Add Recipe
+                </button>
+                <button id="logoutBtn" onclick="logout()" class="btn btn-outline" style="display: none;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Recipe Grid -->
+            <div id="recipeGrid" class="recipe-grid">
+                <!-- Recipes will be dynamically added here -->
+            </div>
+
+            <!-- No Recipes Message -->
+            <div id="noRecipes" class="no-recipes">
+                <i class="fas fa-book-open"></i>
+                <h3>No recipes yet!</h3>
+                <p>Login and add your first recipe to get started.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Recipe Modal -->
+    <div id="addRecipeModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus"></i> Add New Recipe</h2>
+                <button onclick="closeAddRecipe()" class="close-btn">&times;</button>
+            </div>
+            
+            <form id="recipeForm" onsubmit="saveRecipe(event)">
+                <div class="form-group">
+                    <label for="recipeName">Recipe Name *</label>
+                    <input type="text" id="recipeName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="recipeImage">Recipe Image</label>
+                    <input type="file" id="recipeImage" accept="image/*">
+                    <div id="imagePreview" class="image-preview"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cookingTime">Cooking Time (minutes)</label>
+                    <input type="number" id="cookingTime" min="1">
+                </div>
+
+                <div class="form-group">
+                    <label>Recipe Type *</label>
+                    <div class="type-buttons">
+                        <button type="button" class="type-btn" data-type="cooking">
+                            <i class="fas fa-fire"></i> Cooking
+                        </button>
+                        <button type="button" class="type-btn" data-type="baking">
+                            <i class="fas fa-birthday-cake"></i> Baking
+                        </button>
+                        <input type="hidden" id="recipeType" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Recipe Steps</label>
+                    <div id="stepsContainer">
+                        <!-- Steps will be added here -->
+                    </div>
+                    <div class="step-buttons">
+                        <button type="button" onclick="addIngredientStep()" class="btn btn-secondary">
+                            <i class="fas fa-carrot"></i> Add Ingredient
+                        </button>
+                        <button type="button" onclick="addInstructionStep()" class="btn btn-secondary">
+                            <i class="fas fa-list-ol"></i> Add Instruction
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" onclick="closeAddRecipe()" class="btn btn-outline">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Recipe</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Recipe Detail Modal -->
+    <div id="recipeDetailModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2 id="detailRecipeName"></h2>
+                <button onclick="closeRecipeDetail()" class="close-btn">&times;</button>
+            </div>
+            <div id="recipeDetailContent">
+                <!-- Recipe details will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
