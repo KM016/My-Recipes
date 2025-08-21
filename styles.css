@@ -377,10 +377,25 @@ body {
     font-style: italic;
 }
 
-.close-rating-btn {
+.rating-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
     margin-top: 1.5rem;
+}
+
+.close-rating-btn, .good-taste-btn {
     padding: 0.75rem 1.5rem;
     font-size: 1rem;
+    min-width: 140px;
+}
+
+/* Single button styling for the changed message */
+.rating-message .close-rating-btn {
+    margin-top: 1rem;
+    padding: 0.875rem 2rem;
+    min-width: 160px;
+    font-weight: 600;
 }
 
 @keyframes chefBounce {
@@ -997,5 +1012,14 @@ body {
     
     .recipe-detail {
         grid-template-columns: 1fr;
+    }
+    
+    .rating-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .close-rating-btn, .good-taste-btn {
+        min-width: 200px;
     }
 }

@@ -523,17 +523,37 @@ function showRatingMessage() {
         <h3>My Response</h3>
         <p>Regardless of what you rated this dish, It's a 5⭐️ cuz i made it.</p>
         <p class="rating-sassy">If you rated it anything other than this sybau 😊</p>
-        <button class="btn btn-primary close-rating-btn">Yes Zaddy 🫩</button>
+        <div class="rating-buttons">
+            <button class="btn btn-primary close-rating-btn">Yes Zaddy 🫩</button>
+            <button class="btn btn-secondary good-taste-btn">But I rated it 5⭐️...</button>
+        </div>
     `;
     
     modalContent.appendChild(message);
     ratingModal.appendChild(modalContent);
     document.body.appendChild(ratingModal);
     
-    // Close modal when clicking the button
+    // Close modal when clicking the first button
     const closeBtn = ratingModal.querySelector('.close-rating-btn');
     closeBtn.onclick = () => {
         ratingModal.remove();
+    };
+    
+    // Change message when clicking the second button
+    const goodTasteBtn = ratingModal.querySelector('.good-taste-btn');
+    goodTasteBtn.onclick = () => {
+        message.innerHTML = `
+            <div class="rating-icon">😘</div>
+            <h3>My Response</h3>
+            <p>Then you clearly have good taste pookie 😘</p>
+            <button class="btn btn-primary close-rating-btn">Fanks 🤭</button>
+        `;
+        
+        // Update the close button functionality
+        const newCloseBtn = ratingModal.querySelector('.close-rating-btn');
+        newCloseBtn.onclick = () => {
+            ratingModal.remove();
+        };
     };
     
     // Close modal when clicking outside
