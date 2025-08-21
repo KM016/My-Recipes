@@ -98,8 +98,11 @@ async function login() {
     const loginError = document.getElementById('loginError');
     
     if (!username || !password) {
+        // Show Freak Sonic for missing credentials
         loginError.innerHTML = `
-            <p style="color: #ef4444; font-weight: 600;">Please enter both username and password</p>
+            <img src="freaksonic.gif" alt="Freak Sonic" style="width: 200px; height: 200px; border-radius: 12px; margin-bottom: 1rem;">
+            <p style="font-size: 1.1rem; font-weight: 600; color: #ef4444; margin-bottom: 0.5rem;">Looks like you tried to enter my site without my permission...</p>
+            <p style="font-size: 1rem; color: #dc2626;">Freak Sonic has now given you 10 days to live 👅</p>
         `;
         return;
     }
@@ -131,11 +134,11 @@ async function login() {
             sessionStorage.setItem('isLoggedIn', 'true');
         } else {
             // Login failed
-                    loginError.innerHTML = `
-            <p style="font-size: 1.1rem; font-weight: 600; color: #ef4444; margin-bottom: 0.5rem;">Looks like you tried to enter my site without my permission...</p>
-            <p style="font-size: 1rem; color: #dc2626;">Freak Sonic has now given you 10 days to live 👅</p>
-            <img src="freaksonic.gif" alt="Freak Sonic" style="width: 200px; height: 200px; border-radius: 12px; margin-top: 1rem;">
-        `;
+            loginError.innerHTML = `
+                <img src="freaksonic.gif" alt="Freak Sonic" style="width: 200px; height: 200px; border-radius: 12px; margin-bottom: 1rem;">
+                <p style="font-size: 1.1rem; font-weight: 600; color: #ef4444; margin-bottom: 0.5rem;">Looks like you tried to enter my site without my permission...</p>
+                <p style="font-size: 1rem; color: #dc2626;">Freak Sonic has now given you 10 days to live 👅</p>
+            `;
             document.getElementById('passwordInput').value = '';
         }
     } catch (error) {
@@ -466,7 +469,7 @@ function showUpdateConfirmation(recipeName) {
         <div class="confirmation-icon">✅</div>
         <h3>Recipe Updated!</h3>
         <p>"${recipeName}" has been successfully updated.</p>
-        <button class="btn btn-primary close-confirmation-btn">Awesome! 🎉</button>
+        <button class="btn btn-primary close-confirmation-btn">Wow 🍇</button>
     `;
     
     modalContent.appendChild(message);
@@ -508,8 +511,8 @@ function showSaveConfirmation(recipeName) {
     message.innerHTML = `
         <div class="confirmation-icon">🎉</div>
         <h3>Recipe Saved!</h3>
-        <p>"${recipeName}" has been successfully added to your collection.</p>
-        <button class="btn btn-primary close-confirmation-btn">Sweet! 🍳</button>
+        <p>"${recipeName}" has been saved - the collection groweth</p>
+        <button class="btn btn-primary close-confirmation-btn">🫦</button>
     `;
     
     modalContent.appendChild(message);
@@ -873,6 +876,8 @@ function showRecipeDetail(recipe) {
             
             <div class="recipe-detail-image-container">
                 ${recipe.image ? `<img src="${recipe.image}" alt="${recipe.name}" class="recipe-detail-image">` : '<div class="recipe-detail-image"><i class="fas fa-utensils"></i></div>'}
+                <!-- Freak Sonic - Bottom Right -->
+                <img src="./freaksonic.gif" alt="Freak Sonic" class="freak-sonic-overlay">
             </div>
             
             <div class="recipe-steps">
@@ -887,6 +892,10 @@ function showRecipeDetail(recipe) {
     content += `
                     </ol>
                 </div>
+                
+                </div>
+            </div>
+            
         </div>
     `;
     

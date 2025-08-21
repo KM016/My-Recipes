@@ -779,6 +779,7 @@ body {
     display: flex;
     align-items: flex-start;
     justify-content: center;
+    position: relative;
 }
 
 .recipe-detail-image {
@@ -905,6 +906,63 @@ body {
     background: linear-gradient(135deg, #87ceeb 0%, #5dade2 100%);
 }
 
+/* Freak Sonic Overlay - Bottom Center */
+.freak-sonic-overlay {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(176, 234, 255, 0.6);
+    transition: all 0.3s ease;
+    z-index: 10;
+    animation: freakSonicAppear 0.8s ease-in-out;
+}
+
+.freak-sonic-overlay:hover {
+    transform: translateX(-50%) scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    border-color: rgba(176, 234, 255, 0.8);
+}
+
+.freak-sonic-gif {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: 2px solid rgba(176, 234, 255, 0.6);
+    transition: all 0.3s ease;
+}
+
+.freak-sonic-gif:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+    border-color: rgba(176, 234, 255, 0.6);
+}
+
+.freak-sonic-message {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(176, 234, 255, 0.3);
+}
+
+@keyframes freakSonicAppear {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
 /* Login Modal Specific Styles */
 #loginModal .modal-content {
     text-align: center;
@@ -1025,21 +1083,22 @@ body {
     flex-direction: column;
 }
 
-.error-message:not(:empty) {
-    display: block;
-}
-
 .error-message img {
     display: block;
-    margin: 1rem auto 0 auto;
+    margin: 0 auto 1rem auto;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
     border: 2px solid rgba(239, 68, 68, 0.3);
-    order: 2;
+    order: 1;
 }
 
 .error-message p {
     margin: 0;
     line-height: 1.4;
+    order: 1;
+}
+
+.error-message p:last-of-type {
+    order: 2;
 }
 
 @keyframes errorShake {
@@ -1095,5 +1154,10 @@ body {
     
     .close-rating-btn, .good-taste-btn {
         min-width: 200px;
+    }
+    
+    .freak-sonic-overlay {
+        width: 60px;
+        height: 60px;
     }
 }
