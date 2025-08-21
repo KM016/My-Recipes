@@ -1,4 +1,14 @@
-// Recipe Manager App - JavaScript Functionality
+// Recipe Manager App - JavaScript Functionality with Supabase
+
+// Supabase Configuration
+const supabaseUrl = 'https://efjpbgxkcuhgssdkstop.supabase.co'
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVmanBiZ3hrY3VoZ3NzZGtzdG9wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU4MTMwNTUsImV4cCI6MjA3MTM4OTA1NX0.EEsqXF2jgbCcsPk-tpjk4DoTrBgDUVnRr3Ih0j3msQc'
+
+// Validate Supabase configuration
+console.log('Supabase URL:', supabaseUrl);
+console.log('Supabase Anon Key length:', supabaseAnonKey.length);
+
+let supabase;
 
 // App State
 let isLoggedIn = false;
@@ -7,20 +17,41 @@ let currentStepId = 0;
 
 // Constants
 const PASSWORD = 'bestchefoat6969'; // Simple password for demo purposes
-const STORAGE_KEY = 'recipeManagerData';
 
-// DOM Elements
-const loginModal = document.getElementById('loginModal');
-const addRecipeModal = document.getElementById('addRecipeModal');
-const recipeDetailModal = document.getElementById('recipeDetailModal');
-const recipeGrid = document.getElementById('recipeGrid');
-const noRecipes = document.getElementById('noRecipes');
-const loginBtn = document.getElementById('loginBtn');
-const addRecipeBtn = document.getElementById('addRecipeBtn');
-const logoutBtn = document.getElementById('logoutBtn');
+// DOM Elements - will be initialized after DOM loads
+let loginModal, addRecipeModal, recipeDetailModal, recipeGrid, noRecipes, loginBtn, addRecipeBtn, logoutBtn;
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Supabase client
+    try {
+        console.log('Window supabase object:', window.supabase);
+        supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+        console.log('Supabase client created successfully:', supabase);
+        
+        // Test the connection
+        testSupabaseConnection();
+    } catch (error) {
+        console.error('Error creating Supabase client:', error);
+    }
+    
+    // Initialize DOM elements
+    loginModal = document.getElementById('loginModal');
+    addRecipeModal = document.getElementById('addRecipeModal');
+    recipeDetailModal = document.getElementById('recipeDetailModal');
+    recipeGrid = document.getElementById('recipeGrid');
+    noRecipes = document.getElementById('noRecipes');
+    loginBtn = document.getElementById('loginBtn');
+    addRecipeBtn = document.getElementById('addRecipeBtn');
+    logoutBtn = document.getElementById('logoutBtn');
+    
+    // Check if Supabase is loaded
+    if (typeof window.supabase === 'undefined') {
+        console.error('Supabase not loaded!');
+        alert('Error: Supabase library not loaded. Please refresh the page.');
+        return;
+    }
+    
     loadRecipes();
     updateUI();
     setupEventListeners();
@@ -61,11 +92,10 @@ function login() {
         document.getElementById('passwordInput').value = '';
         loginError.innerHTML = '';
         updateUI();
-        saveToStorage();
         displayRecipes(); // Refresh recipe display to show edit/delete buttons
     } else {
         loginError.innerHTML = `
-            <img src="freaksonic.gif" alt="Freak Sonic" style="width: 200px; height: 200px; border-radius: 12px; margin-bottom: 1rem;">
+            <img src="freaksonic.jpg" alt="Freak Sonic" style="width: 200px; height: 200px; border-radius: 12px; margin-bottom: 1rem;">
             <p style="font-size: 1.1rem; font-weight: 600; color: #ef4444; margin-bottom: 0.5rem;">Looks like you tried to enter my site without my permission...</p>
             <p style="font-size: 1rem; color: #dc2626;">Freak Sonic has now given you 10 days to live 👅</p>
         `;
@@ -76,7 +106,6 @@ function login() {
 function logout() {
     isLoggedIn = false;
     updateUI();
-    saveToStorage();
     displayRecipes(); // Refresh recipe display to show rating system
 }
 
@@ -282,32 +311,30 @@ function saveRecipe(event) {
         const existingRecipe = window.editingRecipe;
         existingRecipe.name = name;
         existingRecipe.type = type;
-        existingRecipe.cookingTime = cookingTime ? parseInt(cookingTime) : null;
+        existingRecipe.cooking_time = cookingTime ? parseInt(cookingTime) : null;
         existingRecipe.steps = steps;
-        existingRecipe.updatedAt = new Date().toISOString();
+        existingRecipe.updated_at = new Date().toISOString();
         
         // Handle image update
         if (imageFile) {
             const reader = new FileReader();
             reader.onload = function(e) {
                 existingRecipe.image = e.target.result;
-                updateRecipeInStorage(existingRecipe);
+                updateRecipeInDatabase(existingRecipe);
             };
             reader.readAsDataURL(imageFile);
         } else {
             // Keep existing image if no new image selected
-            updateRecipeInStorage(existingRecipe);
+            updateRecipeInDatabase(existingRecipe);
         }
     } else {
         // Create new recipe
         const recipe = {
-            id: Date.now(),
             name: name,
             type: type,
-            cookingTime: cookingTime ? parseInt(cookingTime) : null,
+            cooking_time: cookingTime ? parseInt(cookingTime) : null,
             steps: steps,
-            image: null,
-            createdAt: new Date().toISOString()
+            image: null
         };
         
         // Handle image
@@ -315,36 +342,170 @@ function saveRecipe(event) {
             const reader = new FileReader();
             reader.onload = function(e) {
                 recipe.image = e.target.result;
-                saveRecipeToStorage(recipe);
+                saveRecipeToDatabase(recipe);
             };
             reader.readAsDataURL(imageFile);
         } else {
-            saveRecipeToStorage(recipe);
+            saveRecipeToDatabase(recipe);
         }
     }
 }
 
-function saveRecipeToStorage(recipe) {
-    recipes.push(recipe);
-    saveToStorage();
-    closeAddRecipe();
-    displayRecipes();
-    updateUI();
-}
-
-function updateRecipeInStorage(updatedRecipe) {
-    const index = recipes.findIndex(r => r.id === updatedRecipe.id);
-    if (index > -1) {
-        recipes[index] = updatedRecipe;
-        saveToStorage();
-        closeAddRecipe();
-        displayRecipes();
-        updateUI();
+async function saveRecipeToDatabase(recipe) {
+    try {
+        console.log('Attempting to save recipe:', recipe);
+        console.log('Supabase client:', supabase);
         
-        // Clear editing state
-        window.editingRecipe = null;
+        const { data, error } = await supabase
+            .from('recipes')
+            .insert([recipe])
+            .select()
+        
+        if (error) {
+            console.error('Supabase error:', error);
+            throw error;
+        }
+        
+        console.log('Recipe saved successfully:', data)
+        closeAddRecipe()
+        loadRecipes() // Refresh the display
+        updateUI()
+    } catch (error) {
+        console.error('Error saving recipe:', error)
+        alert('Error saving recipe. Please try again.')
     }
 }
+
+async function updateRecipeInDatabase(updatedRecipe) {
+    try {
+        const { data, error } = await supabase
+            .from('recipes')
+            .update(updatedRecipe)
+            .eq('id', updatedRecipe.id)
+            .select()
+        
+        if (error) throw error
+        
+        console.log('Recipe updated successfully:', data)
+        closeAddRecipe()
+        loadRecipes() // Refresh the display
+        updateUI()
+        
+        // Clear editing state
+        window.editingRecipe = null
+    } catch (error) {
+        console.error('Error updating recipe:', error)
+        alert('Error updating recipe. Please try again.')
+    }
+}
+
+async function deleteRecipeFromDatabase(recipeId) {
+    try {
+        const { error } = await supabase
+            .from('recipes')
+            .delete()
+            .eq('id', recipeId)
+        
+        if (error) throw error
+        
+        console.log('Recipe deleted successfully')
+        loadRecipes() // Refresh the display
+        updateUI()
+    } catch (error) {
+        console.error('Error deleting recipe:', error)
+        alert('Error deleting recipe. Please try again.')
+    }
+}
+
+async function testSupabaseConnection() {
+    try {
+        console.log('Testing Supabase connection...');
+        
+        // Test if we can reach any Supabase domain first
+        console.log('Testing basic internet connectivity...');
+        try {
+            const testResponse = await fetch('https://supabase.com');
+            console.log('Supabase.com reachable:', testResponse.ok);
+        } catch (e) {
+            console.error('Cannot reach supabase.com:', e);
+        }
+        
+        // Test the specific project URL
+        console.log('Testing project URL:', supabaseUrl);
+        const response = await fetch(`${supabaseUrl}/rest/v1/`, {
+            method: 'GET',
+            headers: {
+                'apikey': supabaseAnonKey,
+                'Authorization': `Bearer ${supabaseAnonKey}`
+            }
+        });
+        
+        console.log('HTTP response status:', response.status);
+        console.log('HTTP response headers:', response.headers);
+        
+        if (response.ok) {
+            console.log('Supabase project is reachable!');
+            
+            // Now test the recipes table
+            const { data, error } = await supabase
+                .from('recipes')
+                .select('count')
+                .limit(1);
+            
+            if (error) {
+                console.error('Table query failed:', error);
+            } else {
+                console.log('Recipes table accessible!');
+            }
+        } else {
+            console.error('Project not reachable, status:', response.status);
+        }
+    } catch (error) {
+        console.error('Connection test error:', error);
+        console.error('Error type:', error.constructor.name);
+        console.error('Error message:', error.message);
+        
+        // Check if it's a DNS resolution error
+        if (error.message.includes('Failed to fetch') || error.message.includes('ERR_NAME_NOT_RESOLVED')) {
+            console.error('This appears to be a DNS resolution error. The project URL might be incorrect or the project might be paused.');
+        }
+    }
+}
+
+async function loadRecipes() {
+    try {
+        console.log('Attempting to load recipes from Supabase...');
+        console.log('Supabase client:', supabase);
+        console.log('URL:', supabaseUrl);
+        
+        const { data, error } = await supabase
+            .from('recipes')
+            .select('*')
+            .order('created_at', { ascending: false })
+        
+        if (error) {
+            console.error('Supabase query error:', error);
+            throw error;
+        }
+        
+        recipes = data || []
+        console.log('Recipes loaded successfully:', recipes.length)
+        displayRecipes()
+    } catch (error) {
+        console.error('Error loading recipes:', error)
+        console.error('Error details:', {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code
+        });
+        
+        recipes = []
+        displayRecipes()
+    }
+}
+
+
 
 function showRatingMessage() {
     // Create and show the rating message modal
@@ -440,8 +601,8 @@ function createRecipeCard(recipe) {
     
     const time = document.createElement('span');
     time.className = 'cooking-time';
-    if (recipe.cookingTime) {
-        time.innerHTML = `<i class="fas fa-clock"></i> ${recipe.cookingTime} min`;
+    if (recipe.cooking_time) {
+        time.innerHTML = `<i class="fas fa-clock"></i> ${recipe.cooking_time} min`;
     }
     
     meta.appendChild(tag);
@@ -529,8 +690,8 @@ function showRecipeDetail(recipe) {
             <div class="recipe-detail-info">
                 <div class="recipe-detail-meta">
                     <div><strong>Type:</strong> <span class="recipe-tag ${recipe.type}">${recipe.type}</span></div>
-                    ${recipe.cookingTime ? `<div><strong>Cooking Time:</strong> ${recipe.cookingTime} minutes</div>` : ''}
-                    <div><strong>Created:</strong> ${new Date(recipe.createdAt).toLocaleDateString()}</div>
+                    ${recipe.cooking_time ? `<div><strong>Cooking Time:</strong> ${recipe.cooking_time} minutes</div>` : ''}
+                    <div><strong>Created:</strong> ${new Date(recipe.created_at).toLocaleDateString()}</div>
                 </div>
                 
                 <div class="recipe-ingredients">
@@ -586,7 +747,7 @@ function editRecipe(recipe) {
     
     // Populate the form with existing data
     document.getElementById('recipeName').value = recipe.name;
-    document.getElementById('cookingTime').value = recipe.cookingTime || '';
+    document.getElementById('cookingTime').value = recipe.cooking_time || '';
     
     // Select the recipe type
     document.querySelectorAll('.type-btn').forEach(btn => {
@@ -655,13 +816,7 @@ function deleteRecipe(recipe) {
     }
     
     if (confirm(`Are you sure you want to delete "${recipe.name}"? This action cannot be undone.`)) {
-        const index = recipes.findIndex(r => r.id === recipe.id);
-        if (index > -1) {
-            recipes.splice(index, 1);
-            saveToStorage();
-            displayRecipes();
-            updateUI();
-        }
+        deleteRecipeFromDatabase(recipe.id);
     }
 }
 
@@ -693,34 +848,7 @@ function updateUI() {
     }
 }
 
-// Storage Functions
-function saveToStorage() {
-    const data = {
-        isLoggedIn: isLoggedIn,
-        recipes: recipes
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
 
-function loadRecipes() {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    console.log('Loading recipes from storage:', stored ? 'found' : 'not found'); // Debug log
-    
-    if (stored) {
-        try {
-            const data = JSON.parse(stored);
-            isLoggedIn = data.isLoggedIn || false;
-            recipes = data.recipes || [];
-            console.log('Loaded recipes:', recipes.length); // Debug log
-        } catch (e) {
-            console.error('Error loading stored data:', e);
-            recipes = [];
-        }
-    } else {
-        recipes = [];
-        console.log('No stored data found, starting with empty recipes array'); // Debug log
-    }
-}
 
 // Close modals when clicking outside
 window.onclick = function(event) {
