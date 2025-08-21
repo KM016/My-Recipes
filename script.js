@@ -519,11 +519,11 @@ function showRatingMessage() {
     const message = document.createElement('div');
     message.className = 'rating-message';
     message.innerHTML = `
-        <div class="rating-icon">👨‍🍳</div>
-        <h3>Chef's Response</h3>
-        <p>Regardless of what you rated this dish, It's a 5/5 cuz i made it.</p>
+        <div class="rating-icon">🤨</div>
+        <h3>My Response</h3>
+        <p>Regardless of what you rated this dish, It's a 5⭐️ cuz i made it.</p>
         <p class="rating-sassy">If you rated it anything other than this sybau 😊</p>
-        <button class="btn btn-primary close-rating-btn">Got it, Chef! 👨‍🍳</button>
+        <button class="btn btn-primary close-rating-btn">Yes Zaddy 🫩</button>
     `;
     
     modalContent.appendChild(message);
