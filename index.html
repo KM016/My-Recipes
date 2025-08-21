@@ -20,7 +20,8 @@
     <div id="loginModal" class="modal">
         <div class="modal-content">
             <h2><i class="fas fa-lock"></i> Login Required</h2>
-            <p>Enter password to add recipes</p>
+            <p>Enter credentials to add recipes</p>
+            <input type="text" id="usernameInput" placeholder="Enter username" style="margin-bottom: 1rem;">
             <input type="password" id="passwordInput" placeholder="Enter password">
             <button onclick="login()" class="btn btn-primary">Login</button>
             <p id="loginError" class="error-message"></p>
@@ -56,8 +57,8 @@
             <!-- No Recipes Message -->
             <div id="noRecipes" class="no-recipes">
                 <i class="fas fa-book-open"></i>
-                <h3>No recipes yet!</h3>
-                <p>Login and add your first recipe to get started.</p>
+                <h3>Nothing to see here folks...</h3>
+                <p>Move them cheeks and start writting weather boy</p>
             </div>
         </div>
     </main>

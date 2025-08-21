@@ -888,6 +888,7 @@ body {
     line-height: 1.6;
 }
 
+#loginModal input[type="text"],
 #loginModal input[type="password"] {
     width: 100%;
     padding: 1rem 1.25rem;
@@ -897,18 +898,37 @@ body {
     background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(10px);
     transition: all 0.3s ease;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
+#loginModal input[type="text"]:focus,
 #loginModal input[type="password"]:focus {
     outline: none;
     border-color: #b0eaff;
     box-shadow: 0 0 0 4px rgba(176, 234, 255, 0.1);
     background: rgba(255, 255, 255, 1);
+    transform: translateY(-1px);
 }
 
+#loginModal input[type="text"]:hover,
+#loginModal input[type="password"]:hover {
+    border-color: rgba(176, 234, 255, 0.5);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(176, 234, 255, 0.15);
+}
+
+#loginModal input[type="text"]::placeholder,
 #loginModal input[type="password"]::placeholder {
     color: #94a3b8;
+}
+
+/* Username field specific styling */
+#loginModal input[type="text"] {
+    margin-bottom: 1rem;
+}
+
+#loginModal input[type="password"] {
+    margin-bottom: 2rem;
 }
 
 #loginModal .btn-primary {

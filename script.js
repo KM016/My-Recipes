@@ -15,8 +15,7 @@ let isLoggedIn = false;
 let recipes = [];
 let currentStepId = 0;
 
-// Constants
-const PASSWORD = 'bestchefoat6969'; // Simple password for demo purposes
+// Constants - No hardcoded credentials needed anymore
 
 // DOM Elements - will be initialized after DOM loads
 let loginModal, addRecipeModal, recipeDetailModal, recipeGrid, noRecipes, loginBtn, addRecipeBtn, logoutBtn;
@@ -52,6 +51,9 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
+    // Check if user is already logged in from session
+    checkLoginStatus();
+    
     loadRecipes();
     updateUI();
     setupEventListeners();
@@ -75,36 +77,78 @@ function setupEventListeners() {
 }
 
 // Authentication Functions
+function checkLoginStatus() {
+    const sessionLogin = sessionStorage.getItem('isLoggedIn');
+    if (sessionLogin === 'true') {
+        isLoggedIn = true;
+        updateUI();
+    }
+}
+
 function showLogin() {
     loginModal.style.display = 'block';
-    document.getElementById('passwordInput').focus();
+    document.getElementById('usernameInput').focus();
     // Clear any previous error messages
     document.getElementById('loginError').innerHTML = '';
 }
 
-function login() {
+async function login() {
+    const username = document.getElementById('usernameInput').value.trim();
     const password = document.getElementById('passwordInput').value;
     const loginError = document.getElementById('loginError');
     
-    if (password === PASSWORD) {
-        isLoggedIn = true;
-        loginModal.style.display = 'none';
-        document.getElementById('passwordInput').value = '';
-        loginError.innerHTML = '';
-        updateUI();
-        displayRecipes(); // Refresh recipe display to show edit/delete buttons
-    } else {
+    if (!username || !password) {
         loginError.innerHTML = `
-            <img src="freaksonic.gif" alt="Freak Sonic" style="width: 200px; height: 200px; border-radius: 12px; margin-bottom: 1rem;">
-            <p style="font-size: 1.1rem; font-weight: 600; color: #ef4444; margin-bottom: 0.5rem;">Looks like you tried to enter my site without my permission...</p>
-            <p style="font-size: 1rem; color: #dc2626;">Freak Sonic has now given you 10 days to live 👅</p>
+            <p style="color: #ef4444; font-weight: 600;">Please enter both username and password</p>
         `;
-        document.getElementById('passwordInput').value = '';
+        return;
+    }
+    
+    try {
+        // Use Supabase to verify login credentials
+        const { data, error } = await supabase
+            .rpc('verify_login', {
+                input_username: username,
+                input_password: password
+            });
+        
+        if (error) {
+            console.error('Supabase login error:', error);
+            throw error;
+        }
+        
+        if (data) {
+            // Login successful
+            isLoggedIn = true;
+            loginModal.style.display = 'none';
+            document.getElementById('usernameInput').value = '';
+            document.getElementById('passwordInput').value = '';
+            loginError.innerHTML = '';
+            updateUI();
+            displayRecipes(); // Refresh recipe display to show edit/delete buttons
+            
+            // Store login state in session storage (more secure than localStorage)
+            sessionStorage.setItem('isLoggedIn', 'true');
+        } else {
+            // Login failed
+            loginError.innerHTML = `
+                <img src="freaksonic.gif" alt="Freak Sonic" style="width: 200px; height: 200px; border-radius: 12px; margin-bottom: 1rem;">
+                <p style="font-size: 1.1rem; font-weight: 600; color: #ef4444; margin-bottom: 0.5rem;">Looks like you tried to enter my site without my permission...</p>
+                <p style="font-size: 1rem; color: #dc2626;">Freak Sonic has now given you 10 days to live 👅</p>
+            `;
+            document.getElementById('passwordInput').value = '';
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        loginError.innerHTML = `
+            <p style="color: #ef4444; font-weight: 600;">Login failed. Please try again.</p>
+        `;
     }
 }
 
 function logout() {
     isLoggedIn = false;
+    sessionStorage.removeItem('isLoggedIn');
     updateUI();
     displayRecipes(); // Refresh recipe display to show rating system
 }
