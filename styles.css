@@ -346,6 +346,53 @@ body {
     text-align: center;
 }
 
+/* Confirmation Modal */
+.confirmation-modal-content {
+    max-width: 450px;
+    text-align: center;
+}
+
+.confirmation-message {
+    padding: 1rem 0;
+}
+
+.confirmation-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    animation: confirmationBounce 0.6s ease-in-out;
+}
+
+.confirmation-message h3 {
+    color: #2d3748;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.confirmation-message p {
+    color: #4a5568;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.close-confirmation-btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+}
+
+@keyframes confirmationBounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
 .rating-message {
     padding: 1rem 0;
 }
@@ -974,14 +1021,20 @@ body {
 }
 
 .error-message:not(:empty) {
+    display: flex;
+    flex-direction: column;
+}
+
+.error-message:not(:empty) {
     display: block;
 }
 
 .error-message img {
     display: block;
-    margin: 0 auto 1rem auto;
+    margin: 1rem auto 0 auto;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
     border: 2px solid rgba(239, 68, 68, 0.3);
+    order: 2;
 }
 
 .error-message p {

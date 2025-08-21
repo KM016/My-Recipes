@@ -131,11 +131,11 @@ async function login() {
             sessionStorage.setItem('isLoggedIn', 'true');
         } else {
             // Login failed
-            loginError.innerHTML = `
-                <img src="freaksonic.gif" alt="Freak Sonic" style="width: 200px; height: 200px; border-radius: 12px; margin-bottom: 1rem;">
-                <p style="font-size: 1.1rem; font-weight: 600; color: #ef4444; margin-bottom: 0.5rem;">Looks like you tried to enter my site without my permission...</p>
-                <p style="font-size: 1rem; color: #dc2626;">Freak Sonic has now given you 10 days to live 👅</p>
-            `;
+                    loginError.innerHTML = `
+            <p style="font-size: 1.1rem; font-weight: 600; color: #ef4444; margin-bottom: 0.5rem;">Looks like you tried to enter my site without my permission...</p>
+            <p style="font-size: 1rem; color: #dc2626;">Freak Sonic has now given you 10 days to live 👅</p>
+            <img src="freaksonic.gif" alt="Freak Sonic" style="width: 200px; height: 200px; border-radius: 12px; margin-top: 1rem;">
+        `;
             document.getElementById('passwordInput').value = '';
         }
     } catch (error) {
@@ -411,6 +411,10 @@ async function saveRecipeToDatabase(recipe) {
         }
         
         console.log('Recipe saved successfully:', data)
+        
+        // Show success confirmation
+        showSaveConfirmation(recipe.name);
+        
         closeAddRecipe()
         loadRecipes() // Refresh the display
         updateUI()
@@ -431,6 +435,10 @@ async function updateRecipeInDatabase(updatedRecipe) {
         if (error) throw error
         
         console.log('Recipe updated successfully:', data)
+        
+        // Show success confirmation
+        showUpdateConfirmation(updatedRecipe.name);
+        
         closeAddRecipe()
         loadRecipes() // Refresh the display
         updateUI()
@@ -441,6 +449,92 @@ async function updateRecipeInDatabase(updatedRecipe) {
         console.error('Error updating recipe:', error)
         alert('Error updating recipe. Please try again.')
     }
+}
+
+function showUpdateConfirmation(recipeName) {
+    // Create and show the update confirmation modal
+    const confirmationModal = document.createElement('div');
+    confirmationModal.className = 'confirmation-modal modal';
+    confirmationModal.style.display = 'block';
+    
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content confirmation-modal-content';
+    
+    const message = document.createElement('div');
+    message.className = 'confirmation-message';
+    message.innerHTML = `
+        <div class="confirmation-icon">✅</div>
+        <h3>Recipe Updated!</h3>
+        <p>"${recipeName}" has been successfully updated.</p>
+        <button class="btn btn-primary close-confirmation-btn">Awesome! 🎉</button>
+    `;
+    
+    modalContent.appendChild(message);
+    confirmationModal.appendChild(modalContent);
+    document.body.appendChild(confirmationModal);
+    
+    // Close modal when clicking the button
+    const closeBtn = confirmationModal.querySelector('.close-confirmation-btn');
+    closeBtn.onclick = () => {
+        confirmationModal.remove();
+    };
+    
+    // Close modal when clicking outside
+    confirmationModal.onclick = (e) => {
+        if (e.target === confirmationModal) {
+            confirmationModal.remove();
+        }
+    };
+    
+    // Auto-close after 3 seconds
+    setTimeout(() => {
+        if (confirmationModal.parentNode) {
+            confirmationModal.remove();
+        }
+    }, 3000);
+}
+
+function showSaveConfirmation(recipeName) {
+    // Create and show the save confirmation modal
+    const confirmationModal = document.createElement('div');
+    confirmationModal.className = 'confirmation-modal modal';
+    confirmationModal.style.display = 'block';
+    
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content confirmation-modal-content';
+    
+    const message = document.createElement('div');
+    message.className = 'confirmation-message';
+    message.innerHTML = `
+        <div class="confirmation-icon">🎉</div>
+        <h3>Recipe Saved!</h3>
+        <p>"${recipeName}" has been successfully added to your collection.</p>
+        <button class="btn btn-primary close-confirmation-btn">Sweet! 🍳</button>
+    `;
+    
+    modalContent.appendChild(message);
+    confirmationModal.appendChild(modalContent);
+    document.body.appendChild(confirmationModal);
+    
+    // Close modal when clicking the button
+    const closeBtn = confirmationModal.querySelector('.close-confirmation-btn');
+    closeBtn.onclick = () => {
+        confirmationModal.remove();
+    };
+    
+    // Close modal when clicking outside
+    confirmationModal.onclick = (e) => {
+        if (e.target === confirmationModal) {
+            confirmationModal.remove();
+        }
+    };
+    
+    // Auto-close after 3 seconds
+    setTimeout(() => {
+        if (confirmationModal.parentNode) {
+            confirmationModal.remove();
+        }
+    }, 3000);
 }
 
 async function deleteRecipeFromDatabase(recipeId) {
