@@ -730,7 +730,7 @@ body {
 
 .recipe-detail-image-container {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
 }
 
@@ -739,6 +739,7 @@ body {
     max-height: 400px;
     object-fit: cover;
     border-radius: 12px;
+    align-self: flex-start;
 }
 
 .recipe-detail-image:not(img) {

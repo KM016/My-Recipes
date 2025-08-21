@@ -764,7 +764,12 @@ function showRecipeDetail(recipe) {
     `;
     
     ingredients.forEach((ingredient, index) => {
-        content += `<li class="ingredient-step">${ingredient.content}</li>`;
+        // Format ingredient with hyphen: "Ingredient - Amount"
+        let displayText = ingredient.content;
+        if (ingredient.ingredient && ingredient.amount) {
+            displayText = `${ingredient.ingredient} - ${ingredient.amount}`;
+        }
+        content += `<li class="ingredient-step">${displayText}</li>`;
     });
     
     content += `
